@@ -1,10 +1,5 @@
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
+import { useEffect, useState } from "react";
+import { Box, Button, Drawer, List, ListItem, ListItemButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 interface Color {
@@ -21,9 +16,18 @@ const colors: Color[] = [
 export const BackgroundColors: React.FC = (): JSX.Element => {
   const [background, setBackground] = useState<string>(colors[0].gradient);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const saveColor = localStorage.getItem("backgroundColor");
+    if (saveColor) {
+      setBackground(saveColor);
+    }
+  },[])
 
-  const changeBackground = (color: string): void => {
-    setBackground(color);
+
+  const changeBackground = (gradient: string): void => {
+    setBackground(gradient);
+    localStorage.setItem("backgroundColor", gradient);
     setIsDrawerOpen(false);
   };
 
@@ -40,21 +44,21 @@ export const BackgroundColors: React.FC = (): JSX.Element => {
         zIndex: 0,
       }}
     >
-    <Button
-        variant="text"
-        onClick={() => setIsDrawerOpen(true)}
-        sx={{
-          minWidth: "auto",
-          padding: 0,
-          position: "absolute",
-          top: "50%",
-          right: "16px",
-          transform: "translateY(-50%)" ,
-          display: isDrawerOpen ? "none" : "block",
-        }}
-      >
-        <ArrowBackIosNewIcon />
-      </Button>
+      {!isDrawerOpen && (
+        <Button
+          onClick={() => setIsDrawerOpen(true)}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "16px",
+            transform: "translateY(-50%)",
+            minWidth: "auto",
+            padding: 0,
+          }}
+        >
+          <ArrowBackIosNewIcon />
+        </Button>
+      )}
       <Drawer
         anchor="right"
         open={isDrawerOpen}
@@ -72,7 +76,7 @@ export const BackgroundColors: React.FC = (): JSX.Element => {
       >
         <List sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {colors.map(({ gradient }, index) => (
-            <ListItem key={index}>
+            <ListItem key={index} disablePadding>
               <ListItemButton onClick={() => changeBackground(gradient)}>
                 <Box
                   sx={{
